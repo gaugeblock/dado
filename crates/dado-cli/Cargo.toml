@@ -1,0 +1,22 @@
+[package]
+name = "dado-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "CLI binary and entrypoints for dado"
+
+[lints]
+workspace = true
+
+[dependencies]
+dado-core = { path = "../dado-core", version = "0.1.0-beta.1" }
+dado-mcp = { path = "../dado-mcp", version = "0.1.0-beta.1" }
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "io-util"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

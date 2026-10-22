@@ -1,0 +1,375 @@
+[[patterns]]
+pattern_id = "rust.thiserror.enum.v1"
+language = "rust"
+description = "Strongly typed domain error enum with thiserror"
+template_source = """
+#[derive(Debug, thiserror::Error)]
+pub enum ?[enum_name: Identifier @ identifier] {
+    #[error("Not found: {0}")]
+    NotFound(String),
+    #[error(transparent)]
+    ?[other_variant: Variant @ statement],
+}
+"""
+required_imports = ["use thiserror::Error;"]
+
+[[patterns.holes]]
+hole_id = "enum_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "other_variant"
+expected_type = "Variant"
+ast_node_kind = "statement"
+max_tokens = 32
+allow_literals = false
+
+[patterns.canonical_example_fills]
+enum_name = "AppError"
+other_variant = "Io(#[from] std::io::Error)"
+
+
+[[patterns]]
+pattern_id = "rust.clap.subcommand.v1"
+language = "rust"
+description = "Clap CLI subcommand router enum"
+template_source = """
+#[derive(Debug, clap::Subcommand)]
+pub enum ?[command_enum: Identifier @ identifier] {
+    Init,
+    ?[custom_variant: Variant @ statement],
+}
+"""
+required_imports = ["use clap::Subcommand;"]
+
+[[patterns.holes]]
+hole_id = "command_enum"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "custom_variant"
+expected_type = "Variant"
+ast_node_kind = "statement"
+max_tokens = 32
+allow_literals = false
+
+[patterns.canonical_example_fills]
+command_enum = "Commands"
+custom_variant = "Run { #[arg(long)] dry_run: bool }"
+
+
+[[patterns]]
+pattern_id = "rust.tokio.task_loop.v1"
+language = "rust"
+description = "Resilient tokio async task loop with cancellation"
+template_source = """
+pub async fn ?[fn_name: Identifier @ identifier](mut cancel: tokio_util::sync::CancellationToken) -> Result<(), Box<dyn std::error::Error>> {
+    while !cancel.is_cancelled() {
+        ?[body: Statement @ statement]
+    }
+    Ok(())
+}
+"""
+required_imports = ["use tokio_util::sync::CancellationToken;"]
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+fn_name = "worker_loop"
+body = "tokio::time::sleep(std::time::Duration::from_millis(100)).await;"
+
+
+[[patterns]]
+pattern_id = "rust.axum.json_handler.v1"
+language = "rust"
+description = "Axum HTTP JSON handler returning Result"
+template_source = """
+pub async fn ?[fn_name: Identifier @ identifier](axum::Json(payload): axum::Json<?[req_type: Type @ type]>) -> Result<axum::Json<?[resp_type: Type @ type]>, axum::http::StatusCode> {
+    ?[body: Statement @ statement]
+}
+"""
+required_imports = ["use axum::{Json, http::StatusCode};"]
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "req_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "resp_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+fn_name = "create_user"
+req_type = "CreateUserReq"
+resp_type = "UserResp"
+body = "Ok(axum::Json(UserResp { id: payload.id }))"
+
+
+[[patterns]]
+pattern_id = "rust.sqlx.tx_query.v1"
+language = "rust"
+description = "Transactional database query block with rollback on error"
+template_source = """
+pub async fn ?[fn_name: Identifier @ identifier](pool: &sqlx::PgPool) -> Result<?[return_type: Type @ type], sqlx::Error> {
+    let mut tx = pool.begin().await?;
+    ?[body: Statement @ statement]
+    tx.commit().await?;
+    Ok(result)
+}
+"""
+required_imports = ["use sqlx::PgPool;"]
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "return_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+fn_name = "update_balance"
+return_type = "i64"
+body = "let result: i64 = 42;"
+
+
+[[patterns]]
+pattern_id = "rust.serde.config_struct.v1"
+language = "rust"
+description = "Serde config struct with defaults"
+template_source = """
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ?[struct_name: Identifier @ identifier] {
+    #[serde(default)]
+    pub host: String,
+    pub port: ?[port_type: Type @ type],
+}
+"""
+required_imports = ["use serde::{Serialize, Deserialize};"]
+
+[[patterns.holes]]
+hole_id = "struct_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "port_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[patterns.canonical_example_fills]
+struct_name = "ServerConfig"
+port_type = "u16"
+
+
+[[patterns]]
+pattern_id = "rust.iterator.pipeline.v1"
+language = "rust"
+description = "Filter-map-collect iterator pipeline"
+template_source = """
+pub fn ?[fn_name: Identifier @ identifier](items: Vec<?[item_type: Type @ type]>) -> Vec<?[output_type: Type @ type]> {
+    items
+        .into_iter()
+        .?[pipeline_ops: Statement @ statement]
+}
+"""
+required_imports = []
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "item_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "output_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "pipeline_ops"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+fn_name = "transform_items"
+item_type = "i32"
+output_type = "String"
+pipeline_ops = "map(|x| x.to_string()).collect()"
+
+
+[[patterns]]
+pattern_id = "rust.from_str.parser.v1"
+language = "rust"
+description = "FromStr trait implementation"
+template_source = """
+impl std::str::FromStr for ?[target_type: Type @ type] {
+    type Err = ?[error_type: Type @ type];
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        ?[body: Statement @ statement]
+    }
+}
+"""
+required_imports = ["use std::str::FromStr;"]
+
+[[patterns.holes]]
+hole_id = "target_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "error_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+target_type = "ConfigKey"
+error_type = "String"
+body = "Ok(ConfigKey(s.trim().to_string()))"
+
+
+[[patterns]]
+pattern_id = "rust.tracing.instrumented_fn.v1"
+language = "rust"
+description = "Tracing instrumented standalone function"
+template_source = """
+#[tracing::instrument(skip_all)]
+pub async fn ?[fn_name: Identifier @ identifier](id: &str) -> Result<(), String> {
+    ?[body: Statement @ statement]
+    Ok(())
+}
+"""
+required_imports = ["use tracing::instrument;"]
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+fn_name = "execute_task"
+body = "tracing::info!(id, \"task running\");"
+
+
+[[patterns]]
+pattern_id = "rust.tests.unit_scaffold.v1"
+language = "rust"
+description = "Standard unit test module scaffold"
+template_source = """
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ?[test_name: Identifier @ identifier]() {
+        ?[test_body: Statement @ statement]
+    }
+}
+"""
+required_imports = []
+
+[[patterns.holes]]
+hole_id = "test_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "test_body"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 64
+allow_literals = true
+
+[patterns.canonical_example_fills]
+test_name = "test_basic_flow"
+test_body = "assert_eq!(1 + 1, 2);"

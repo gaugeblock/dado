@@ -1,0 +1,270 @@
+[[patterns]]
+pattern_id = "ts.fetch.json_client.v1"
+language = "typescript"
+description = "Typed fetch client with error handling"
+template_source = """
+export async function ?[fn_name: Identifier @ identifier](url: string): Promise<?[resp_type: Type @ type]> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+  return await res.json();
+}
+"""
+required_imports = []
+
+[[patterns.holes]]
+hole_id = "fn_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "resp_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[patterns.canonical_example_fills]
+fn_name = "fetchUserData"
+resp_type = "UserProfile"
+
+
+[[patterns]]
+pattern_id = "ts.zod.schema_inferred.v1"
+language = "typescript"
+description = "Zod schema with inferred type alias"
+template_source = """
+import { z } from "zod";
+
+export const ?[schema_name: Identifier @ identifier] = z.object({
+  id: z.string().uuid(),
+  ?[field_def: Statement @ statement]
+});
+
+export type ?[type_name: Identifier @ identifier] = z.infer<typeof ?[schema_ref: Identifier @ identifier]>;
+"""
+required_imports = ["import { z } from \"zod\";"]
+
+[[patterns.holes]]
+hole_id = "schema_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "field_def"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 32
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "type_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "schema_ref"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[patterns.canonical_example_fills]
+schema_name = "UserRecordSchema"
+field_def = "email: z.string().email(),"
+type_name = "UserRecord"
+schema_ref = "UserRecordSchema"
+
+
+[[patterns]]
+pattern_id = "ts.react.component_props.v1"
+language = "tsx"
+description = "React functional component with typed Props"
+template_source = """
+import React from "react";
+
+export interface ?[props_name: Identifier @ identifier] {
+  title: string;
+  ?[extra_prop: Statement @ statement]
+}
+
+export const ?[comp_name: Identifier @ identifier]: React.FC<?[props_ref: Identifier @ identifier]> = ({ title }) => {
+  return (
+    <div className="component-root">
+      <h1>{title}</h1>
+      ?[children: Expression @ expression]
+    </div>
+  );
+};
+"""
+required_imports = ["import React from \"react\";"]
+
+[[patterns.holes]]
+hole_id = "props_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "extra_prop"
+expected_type = "Statement"
+ast_node_kind = "statement"
+max_tokens = 32
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "comp_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "props_ref"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "children"
+expected_type = "Expression"
+ast_node_kind = "expression"
+max_tokens = 32
+allow_literals = true
+
+[patterns.canonical_example_fills]
+props_name = "HeaderProps"
+extra_prop = "subtitle?: string;"
+comp_name = "HeaderCard"
+props_ref = "HeaderProps"
+children = "<span>Active</span>"
+
+
+[[patterns]]
+pattern_id = "ts.vite.api_hook.v1"
+language = "typescript"
+description = "Vite/React custom API hook with async state"
+template_source = """
+import { useState, useEffect } from "react";
+
+export function ?[hook_name: Identifier @ identifier](endpoint: string) {
+  const [data, setData] = useState<?[data_type: Type @ type] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(endpoint)
+      .then((res) => res.json())
+      .then((json) => {
+        setData(json);
+        setLoading(false);
+      });
+  }, [endpoint]);
+
+  return { data, loading };
+}
+"""
+required_imports = ["import { useState, useEffect } from \"react\";"]
+
+[[patterns.holes]]
+hole_id = "hook_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "data_type"
+expected_type = "Type"
+ast_node_kind = "type"
+max_tokens = 16
+allow_literals = false
+
+[patterns.canonical_example_fills]
+hook_name = "useApiData"
+data_type = "Record<string, unknown>"
+
+
+[[patterns]]
+pattern_id = "ts.state.discriminated_reducer.v1"
+language = "typescript"
+description = "Discriminated union state and action reducer"
+template_source = """
+export type ?[action_type: Identifier @ identifier] =
+  | { type: "RESET" }
+  | { type: "SET_ID"; payload: string };
+
+export interface ?[state_type: Identifier @ identifier] {
+  id: string | null;
+}
+
+export function ?[reducer_name: Identifier @ identifier](state: ?[state_param_type: Identifier @ identifier], action: ?[action_param_type: Identifier @ identifier]): ?[state_return_type: Identifier @ identifier] {
+  switch (action.type) {
+    case "RESET":
+      return { id: null };
+    case "SET_ID":
+      return { id: action.payload };
+    default:
+      return state;
+  }
+}
+"""
+required_imports = []
+
+[[patterns.holes]]
+hole_id = "action_type"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "state_type"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "reducer_name"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "state_param_type"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "action_param_type"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[[patterns.holes]]
+hole_id = "state_return_type"
+expected_type = "Identifier"
+ast_node_kind = "identifier"
+max_tokens = 16
+allow_literals = false
+
+[patterns.canonical_example_fills]
+action_type = "SessionAction"
+state_type = "SessionState"
+reducer_name = "sessionReducer"
+state_param_type = "SessionState"
+action_param_type = "SessionAction"
+state_return_type = "SessionState"

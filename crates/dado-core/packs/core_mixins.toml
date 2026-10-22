@@ -1,0 +1,106 @@
+[[mixins]]
+mixin_id = "rust.mixin.tracing_instrument"
+language = "rust"
+target_hole_id = "body"
+envelope_template = """
+let _span = tracing::info_span!(?[span_name: &str @ expression]).entered();
+?[__inner__]
+"""
+required_imports = ["use tracing::info_span;"]
+
+[[mixins.additional_holes]]
+hole_id = "span_name"
+expected_type = "&str"
+ast_node_kind = "expression"
+max_tokens = 32
+allow_literals = true
+
+[mixins.canonical_example_fills]
+span_name = "\"handler\""
+
+
+[[mixins]]
+mixin_id = "rust.mixin.sqlx_tx"
+language = "rust"
+target_hole_id = "body"
+envelope_template = """
+let mut tx = ?[pool: &sqlx::PgPool @ expression].begin().await?;
+let res = {
+?[__inner__]
+};
+tx.commit().await?;
+res
+"""
+required_imports = []
+
+[[mixins.additional_holes]]
+hole_id = "pool"
+expected_type = "&sqlx::PgPool"
+ast_node_kind = "expression"
+max_tokens = 32
+allow_literals = true
+
+[mixins.canonical_example_fills]
+pool = "pool"
+
+
+[[mixins]]
+mixin_id = "rust.mixin.tokio_timeout"
+language = "rust"
+target_hole_id = "body"
+envelope_template = """
+tokio::time::timeout(std::time::Duration::from_millis(?[timeout_ms: u64 @ expression]), async {
+?[__inner__]
+}).await??
+"""
+required_imports = ["use tokio::time::timeout;"]
+
+[[mixins.additional_holes]]
+hole_id = "timeout_ms"
+expected_type = "u64"
+ast_node_kind = "expression"
+max_tokens = 16
+allow_literals = true
+
+[mixins.canonical_example_fills]
+timeout_ms = "5000"
+
+
+[[mixins]]
+mixin_id = "rust.mixin.result_wrap"
+language = "rust"
+target_hole_id = "body"
+envelope_template = """
+Ok({
+?[__inner__]
+})
+"""
+required_imports = []
+additional_holes = []
+
+[mixins.canonical_example_fills]
+
+
+[[mixins]]
+mixin_id = "ts.mixin.try_catch_log"
+language = "typescript"
+target_hole_id = "body"
+envelope_template = """
+try {
+  ?[__inner__]
+} catch (err) {
+  console.error(?[log_prefix: string @ expression], err);
+  throw err;
+}
+"""
+required_imports = []
+
+[[mixins.additional_holes]]
+hole_id = "log_prefix"
+expected_type = "string"
+ast_node_kind = "expression"
+max_tokens = 32
+allow_literals = true
+
+[mixins.canonical_example_fills]
+log_prefix = "\"Operation failed:\""
