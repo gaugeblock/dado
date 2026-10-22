@@ -1,0 +1,13 @@
+[package]
+name = "dado-cli"
+version = "0.0.1-alpha.1"
+edition = "2024"
+authors = ["Colin Wolff"]
+description = "Command-line interface and MCP server for dado:Deterministic polyglot AST pattern engine with composable Typed Holes."
+license = "Apache-2.0"
+repository = "https://github.com/gaugeblock/dado"
+readme = "../../README.md"
+
+[[bin]]
+name = "dado"
+path = "src/main.rs"
