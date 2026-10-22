@@ -284,9 +284,11 @@ dependencies = [
 name = "dado-cli"
 version = "0.1.0-beta.1"
 dependencies = [
+ "chalkline-core",
  "clap",
  "dado-core",
  "dado-mcp",
+ "miter-engine",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -318,7 +320,9 @@ dependencies = [
 name = "dado-mcp"
 version = "0.1.0-beta.1"
 dependencies = [
+ "chalkline-core",
  "dado-core",
+ "miter-engine",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
