@@ -10,6 +10,10 @@ description = "CLI binary and entrypoints for dado"
 [lints]
 workspace = true
 
+[[bin]]
+name = "dado"
+path = "src/main.rs"
+
 [dependencies]
 dado-core = { path = "../dado-core", version = "0.1.0-beta.1" }
 dado-mcp = { path = "../dado-mcp", version = "0.1.0-beta.1" }

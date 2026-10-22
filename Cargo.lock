@@ -958,8 +958,6 @@ dependencies = [
 [[package]]
 name = "miter-ast"
 version = "0.1.0-alpha.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4c2347057424f1df9374a99484b7b56b8411714829cec872da486d172ff271b"
 dependencies = [
  "indicatif",
  "tree-sitter",
@@ -971,8 +969,6 @@ dependencies = [
 [[package]]
 name = "miter-engine"
 version = "0.1.0-alpha.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "285f9057a2ce01e7f13d1c6b85ff8ec87635c130c37b66dfe9d14184e1fe69c2"
 dependencies = [
  "dockerfile-parser",
  "globset",
@@ -992,8 +988,6 @@ dependencies = [
 [[package]]
 name = "miter-storage"
 version = "0.1.0-alpha.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35dafa2be77c3f0623db00477bb4dc1e0cb36b4c2416b7b23b92bd7eaebe2753"
 dependencies = [
  "redb",
  "serde",
@@ -1435,8 +1429,6 @@ checksum = "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f"
 [[package]]
 name = "sawhorse-core"
 version = "0.1.0-beta.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd1bbb3a1714f7b56ac048c2c3c8a1a3c4ce70b1412f0ac1f122b71da962f788"
 dependencies = [
  "async-trait",
  "futures-util",
@@ -1630,8 +1622,6 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "storypole-core"
 version = "0.1.0-beta.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2de4402fcb41c349450f6531e4490bc617a8c9d3caa54de33e2cf60e21f2c92"
 dependencies = [
  "rusqlite",
  "serde",
@@ -2521,6 +2511,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[patch.unused]]
+name = "batten"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "batten-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "batten-core"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "batten-mcp"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "benchwork"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "benchwork-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "benchwork-core"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "benchwork-mcp"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
 name = "chalkline"
 version = "0.1.0-beta.1"
 
@@ -2530,4 +2552,64 @@ version = "0.1.0-beta.1"
 
 [[patch.unused]]
 name = "chalkline-mcp"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "joiner"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "joiner-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "joiner-core"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "joiner-mcp"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "miter-cli"
+version = "0.1.0-alpha.2"
+
+[[patch.unused]]
+name = "miter-harness"
+version = "0.1.0-alpha.2"
+
+[[patch.unused]]
+name = "miter-mcp"
+version = "0.1.0-alpha.2"
+
+[[patch.unused]]
+name = "rabbet"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "rabbet-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "rabbet-core"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "sawhorse"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "sawhorse-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "storypole"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "storypole-cli"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
+name = "storypole-mcp"
 version = "0.1.0-beta.1"
