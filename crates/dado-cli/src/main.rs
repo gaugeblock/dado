@@ -4,11 +4,13 @@
 
 mod args;
 mod handlers;
+mod init;
 
 use args::{Cli, Commands};
 use clap::Parser;
 use dado_core::PatternRegistry;
 use handlers::*;
+use init::handle_init;
 use std::process::ExitCode;
 use tracing_subscriber::EnvFilter;
 

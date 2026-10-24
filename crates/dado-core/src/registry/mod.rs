@@ -58,10 +58,9 @@ impl PatternRegistry {
         Ok(())
     }
 
-    /// Loads additional patterns or overrides from a directory (e.g. `.dado/patterns` and `.dado/mixins`).
-    pub fn load_from_dir(&mut self, root_dir: &Path) -> Result<usize> {
+    fn load_single_dir(&mut self, dir: &Path) -> Result<usize> {
         let mut count = 0;
-        let patterns_dir = root_dir.join("patterns");
+        let patterns_dir = dir.join("patterns");
         if patterns_dir.exists() && patterns_dir.is_dir() {
             for entry in std::fs::read_dir(patterns_dir)? {
                 let entry = entry?;
@@ -78,7 +77,7 @@ impl PatternRegistry {
             }
         }
 
-        let mixins_dir = root_dir.join("mixins");
+        let mixins_dir = dir.join("mixins");
         if mixins_dir.exists() && mixins_dir.is_dir() {
             for entry in std::fs::read_dir(mixins_dir)? {
                 let entry = entry?;
@@ -95,6 +94,24 @@ impl PatternRegistry {
             }
         }
 
+        Ok(count)
+    }
+
+    /// Loads additional patterns or overrides from a directory.
+    /// Checks `.gaugeblock/dado`, `.dado`, or `root_dir` directly.
+    pub fn load_from_dir(&mut self, root_dir: &Path) -> Result<usize> {
+        let mut count = 0;
+        let gb_dado = root_dir.join(".gaugeblock").join("dado");
+        if gb_dado.is_dir() {
+            count += self.load_single_dir(&gb_dado)?;
+        }
+        let dot_dado = root_dir.join(".dado");
+        if dot_dado.is_dir() {
+            count += self.load_single_dir(&dot_dado)?;
+        }
+        if root_dir.join("patterns").is_dir() || root_dir.join("mixins").is_dir() {
+            count += self.load_single_dir(root_dir)?;
+        }
         Ok(count)
     }
 
