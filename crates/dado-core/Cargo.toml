@@ -11,9 +11,9 @@ description = "Core library, AST pattern engine, typed hole parser, and polyglot
 workspace = true
 
 [dependencies]
-miter-engine = "0.1.0-alpha.2"
-miter-ast = "0.1.0-alpha.2"
-chalkline-core = "0.1.0-beta.1"
+miter-engine = "0.1.0-alpha.3"
+miter-ast = "0.1.0-alpha.3"
+chalkline-core = "0.1.0-beta.2"
 tree-sitter = "0.24"
 tree-sitter-rust = "0.23"
 tree-sitter-typescript = "0.23"
