@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.0-beta.3] - 2026-05-09
+
+### Added
+- Established 9-doc architecture for the `dado` crate (DA-001).
+- Initialized local backlog store with `DA` prefix for the `dado` crate (DA-002).
+
+### Fixed
+- None.
+
+### Changed
+- Standardized README for the `dado` crate (DA-001).
+
+### Maintenance
+- Updated release history with alpha and beta milestones for the `dado` crate (DA-003).
+
 ### Documentation
 - Standardize README to 9-section template and establish AST-grounded 9-document architecture
 
