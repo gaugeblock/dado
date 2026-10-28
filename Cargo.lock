@@ -289,6 +289,7 @@ name = "dado-core"
 version = "0.1.0-beta.4"
 dependencies = [
  "chalkline-core",
+ "gaugeblock-contracts",
  "miter-ast",
  "miter-engine",
  "serde",
@@ -488,6 +489,15 @@ dependencies = [
  "memchr",
  "pin-project-lite",
  "slab",
+]
+
+[[package]]
+name = "gaugeblock-contracts"
+version = "0.1.0-beta.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -1441,6 +1451,7 @@ version = "0.1.0-beta.6"
 dependencies = [
  "async-trait",
  "futures-util",
+ "gaugeblock-contracts",
  "reqwest",
  "serde",
  "serde_json",
@@ -2448,35 +2459,35 @@ checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[patch.unused]]
 name = "batten"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "batten-cli"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "batten-core"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "batten-mcp"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "benchwork"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "benchwork-cli"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "benchwork-core"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "benchwork-mcp"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "chalkline"
@@ -2491,20 +2502,24 @@ name = "chalkline-mcp"
 version = "0.1.0-beta.4"
 
 [[patch.unused]]
+name = "gaugeblock-common"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
 name = "joiner"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "joiner-cli"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "joiner-core"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "joiner-mcp"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "miter-cli"
@@ -2520,31 +2535,31 @@ version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "outfeed"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "outfeed-cli"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "outfeed-core"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "outfeed-mcp"
-version = "0.1.0-beta.6"
+version = "0.1.0-beta.7"
 
 [[patch.unused]]
 name = "rabbet"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "rabbet-cli"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "rabbet-core"
-version = "0.1.0-beta.3"
+version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "sawhorse"
