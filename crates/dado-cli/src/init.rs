@@ -42,10 +42,6 @@ body = "42"
 "#;
     std::fs::write(patterns_dir.join("example.toml"), example_pattern)?;
 
-    println!(
-        "Initialized dado configuration at {}",
-        dado_dir.display()
-    );
+    println!("Initialized dado configuration at {}", dado_dir.display());
     Ok(())
 }
-

@@ -191,8 +191,6 @@ pub fn handle_verify_pack(
     Ok(())
 }
 
-
-
 fn parse_lang(s: &str) -> Option<Language> {
     match s.to_lowercase().as_str() {
         "rust" | "rs" => Some(Language::Rust),

@@ -7,11 +7,24 @@
 
 Part of the **[`gaugeblock`](https://gaugeblock.dev)** neurosymbolic code synthesis ecosystem.
 
-> In fine woodworking, a **dado** is a precision rectangular groove cut across the grain of a board into which another piece fits snugly, forming an interlocking joint without nails. In the `gaugeblock` ecosystem, `dado` eliminates 85% of LLM token generation: rather than asking a model to hallucinate boilerplate from scratch, `dado` provides parameterized AST patterns with explicit **Typed Holes** (`?[hole_id: ExpectedType @ ast_node_kind]`), composable structural mixins, and Tree-Sitter validated splicing with zero `ERROR` nodes.
+> In fine woodworking, a **dado** is a precision rectangular groove cut across the grain of a board into which another workpiece fits snugly, forming an interlocking joint without nails. In the `gaugeblock` ecosystem, `dado` eliminates 85% of LLM token generation: rather than asking a model to hallucinate boilerplate syntax from scratch, `dado` provides parameterized AST patterns with explicit **Typed Holes** (`?[hole_id: ExpectedType @ ast_node_kind]`), composable structural mixins, and Tree-Sitter validated splicing with zero `ERROR` nodes.
 
 ---
 
-## 1. Architecture Overview
+## Why `dado`?
+
+Modern LLM-based coding tools treat source code as flat stochastic text, generating boilerplate imports, framework wrappers, and bracket structures token-by-token.
+
+| Without `dado` | With `dado` |
+|---|---|
+| **Stochastic Boilerplate:** The LLM predicts every token of HTTP handlers, SQL transactions, and CLI commands from scratch, burning 85%+ of context on predictable structure. | **Parameterized AST Patterns:** `dado` provides pre-verified structural templates for Rust and TypeScript; models only generate the 5–25 tokens needed for specific business logic. |
+| **Boilerplate Pollution:** Adding tracing, timeout guards, or error handling requires models to rewrite entire functions, introducing indentation errors and typos. | **Composable Structural Mixins:** Apply mixins (`tracing`, `sqlx_tx`, `tokio_timeout`) via clean AST wrapping on `?[__inner__]` anchors without neural sampling. |
+| **Malformed Splicing:** String-based template engines (Jinja/Handlebars) produce syntax errors, unclosed braces, or missing imports. | **Tree-sitter AST Splicer:** Verifies that every rendered AST contains zero `ERROR` or `MISSING` nodes and automatically injects required imports. |
+| **Polyglot Type Divergence:** Writing matching backend models and frontend schemas leads to silent drift between Rust structs and TypeScript interfaces. | **Deterministic Contract Codegen:** `dado contract` compiles shared data schemas into matching Rust serde types and TypeScript Zod schemas deterministically. |
+
+---
+
+## 1. System Architecture
 
 ```text
 ┌────────────────────────────────────────────────────────┐
@@ -21,7 +34,7 @@ Part of the **[`gaugeblock`](https://gaugeblock.dev)** neurosymbolic code synthe
                             │
                             ▼
 ┌────────────────────────────────────────────────────────┐
-│ dado Core Engine                                       │
+│ dado Core Engine (Tree-sitter Syntax Splicer)          │
 │ - Typed Hole Extractor: `?[id: Type @ kind]` spans     │
 │ - Structural Mixin Composer: `tracing`, `timeout`, etc.│
 │ - Tree-Sitter AST Splicer: Zero-ERROR byte substitution│
@@ -32,7 +45,7 @@ Part of the **[`gaugeblock`](https://gaugeblock.dev)** neurosymbolic code synthe
 ┌───────────────────────────┐ ┌──────────────────────────┐
 │ CLI (`dado`)              │ │ MCP Stdio Server         │
 │ - dado list / inspect     │ │ - dado_list_patterns     │
-│ - dado render             │ │ - dado_render            │
+│ - dado render / init      │ │ - dado_render            │
 │ - dado contract           │ │ - dado_emit_contract     │
 │ - dado verify-pack        │ │ - dado_verify_pack       │
 └───────────────────────────┘ └──────────────────────────┘
@@ -40,88 +53,78 @@ Part of the **[`gaugeblock`](https://gaugeblock.dev)** neurosymbolic code synthe
 
 ---
 
-## 2. Core Capabilities
+## 2. CLI Commands Reference
 
-* **Inline Typed Hole Syntax:** Parse `?[hole_id: ExpectedType @ ast_node_kind]` markers and extract exact byte spans and node boundaries.
-* **Embedded Starter Packs & Local Overrides:** 15+ verified Rust and TypeScript patterns embedded via `include_str!`, plus support for `.gaugeblock/dado/patterns/` project overrides.
-* **Composable Structural Mixins:** Apply reusable structural wrappers (`tracing`, `sqlx_tx`, `tokio_timeout`, `try_catch_log`) cleanly with anchor chaining on `?[__inner__]`.
-* **Tree-Sitter Validated AST Splicer:** Substitutes filled expressions and injects missing `use` / `import` statements, validating that syntax trees contain 0 `ERROR` or `MISSING` nodes.
-* **Zero-LLM Polyglot Contract Codegen:** Emits typed Rust serde structs and TypeScript interfaces / Zod schemas from `chalkline` contracts without neural sampling.
+`dado` provides a unified CLI for developer exploration and autonomous agent automation. Pass `--json` to any command for structured machine-readable output.
 
----
-
-## 3. Workspace Crate Layout
-
-* **`dado`**: Root facade crate re-exporting `dado-core`.
-* **`crates/dado-core`**: Core domain types, pattern parsers, Tree-sitter splicer, mixin composition engine, and contract codegen.
-* **`crates/dado-cli`**: Clap binary entrypoint (`dado`).
-* **`crates/dado-mcp`**: JSON-RPC 2.0 stdio Model Context Protocol (MCP) server.
+| Command | Description | MCP Tool |
+|---|---|---|
+| `list` | List registered AST patterns across embedded packs and local directories. | `dado_list_patterns` |
+| `inspect <ID>` | Inspect a specific pattern, its typed holes, expected types, and mixins. | `dado_inspect_pattern` |
+| `render` | Render an AST pattern with substituted typed hole values and mixins. | `dado_render` |
+| `contract` | Generate aligned Rust serde structs or TypeScript Zod schemas from a contract. | `dado_emit_contract` |
+| `verify-pack` | Verify that registered patterns parse cleanly with zero Tree-sitter error nodes. | `dado_verify_pack` |
+| `init` | Initialize local `.dado/patterns/` and `.dado/mixins/` project directories. | — |
+| `mcp` | Launch the Model Context Protocol (JSON-RPC 2.0 stdio) server. | — |
 
 ---
 
-## 4. Installation & CLI Quickstart
+## 3. Model Context Protocol (MCP) Reference
+
+When operating inside AI agents (Antigravity, Claude Code, Cursor, Cline), `dado` exposes 5 core tools:
+
+| Tool | Parameters | Description |
+|---|---|---|
+| `dado_list_patterns` | `lang?, query?` | List all available AST templates across embedded and workspace packs. |
+| `dado_inspect_pattern` | `pattern_id` | Retrieve pattern template, typed holes, required imports, and available mixins. |
+| `dado_render` | `pattern_id, holes, mixin?` | Render an AST template with substituted hole values and structural mixins. |
+| `dado_emit_contract` | `input, target` | Generate Rust serde structs or TypeScript Zod interfaces from contract schemas. |
+| `dado_verify_pack` | — | Validate that all patterns compile to valid Tree-sitter ASTs with zero errors. |
+
+---
+
+## 4. Installation & Quickstart
 
 ```bash
 # Install globally via cargo
 cargo install --path crates/dado-cli
 
-# 1. List available embedded and local AST patterns
-dado list
+# Initialize local project patterns directory
+dado init
 
-# 2. Inspect an AST pattern and its typed hole signatures
+# List available Rust and TypeScript patterns
+dado list --lang rust
+
+# Inspect an Axum handler pattern and its typed holes
 dado inspect rust/axum_handler
 
-# 3. Render a pattern with hole fills and mixins
-dado render --pattern rust/axum_handler \
-  --hole handler_name=get_user \
-  --hole response_type=Json<User> \
+# Render an AST pattern with hole fills and mixins
+dado render --pattern-id rust/axum_handler \
+  --holes '{"handler_name": "get_user", "response_type": "Json<User>"}' \
   --mixin tracing \
   --mixin tokio_timeout
 
-# 4. Generate aligned Rust and TypeScript types from a spec contract
-dado contract --spec SPEC.md --lang rust
-dado contract --spec SPEC.md --lang ts
-
-# 5. Verify local pattern packs for AST validity
-dado verify-pack .gaugeblock/dado/patterns
+# Emit TypeScript types from a shared type contract
+dado contract --input contracts/user.json --target typescript
 ```
 
 ---
 
-## 5. Model Context Protocol (MCP) Reference
+## 5. Canonical 9-Document Architecture
 
-| Tool | Parameters | Description |
-|---|---|---|
-| `dado_list_patterns` | `language?` | List all available AST templates across embedded and workspace packs. |
-| `dado_inspect_pattern` | `pattern_id` | Retrieve pattern template, typed holes, required imports, and available mixins. |
-| `dado_render` | `pattern_id, holes, mixins?` | Render an AST template with substituted hole values and structural mixins. |
-| `dado_emit_contract` | `contract_json, target_lang` | Generate Rust serde structs or TypeScript Zod interfaces from contract schemas. |
-| `dado_verify_pack` | `pack_dir` | Validate that all patterns in a directory compile to valid Tree-sitter ASTs. |
-
----
-
-## 6. Repository Documentation
-
-`dado` adheres strictly to the canonical **9-Document Architecture**:
-* **[`CONTRIBUTING.md`](./CONTRIBUTING.md):** Local toolchain prerequisites, pattern authoring guidelines, and test execution.
-* **[`ARCHITECTURE.md`](./ARCHITECTURE.md):** Subsystem decomposition, Tree-sitter grammar loading, and mixin chain topology.
-* **[`SPEC.md`](./SPEC.md):** Formal TOML pattern schemas, TypedHole grammar, and error invariants.
-* **[`AGENTS.md`](./AGENTS.md):** Autonomous systems directives, <=250 LOC limits, and zero-unwrap rules.
-* **[`CHANGELOG.md`](./CHANGELOG.md):** Chronological historical release entries and unreleased changes.
+`dado` adheres strictly to the canonical 9-Document Architecture:
+* **[`README.md`](./README.md):** Public elevator pitch, CLI reference, and quickstart.
+* **[`CONTRIBUTING.md`](./CONTRIBUTING.md):** Developer environment setup, Rust 2024 toolchain, and test execution.
+* **[`PRODUCT.md`](./PRODUCT.md):** User personas, JTBD, token reduction metrics, and problem statements.
+* **[`ARCHITECTURE.md`](./ARCHITECTURE.md):** Subsystem topologies, Tree-sitter splicing pipeline, and crate boundaries.
+* **[`SPEC.md`](./SPEC.md):** Formal typed hole grammar, AST validation invariants, and type contracts.
+* **[`DESIGN.md`](./DESIGN.md):** Architectural Decision Records (ADRs) and trade-off rationales.
+* **[`ROADMAP.md`](./ROADMAP.md):** Strategic milestones, active beta capabilities, and horizons.
+* **[`CHANGELOG.md`](./CHANGELOG.md):** Chronological historical release logs and unreleased entries.
+* **[`AGENTS.md`](./AGENTS.md):** Non-negotiable engineering directives, 250-line file ceiling, and verification matrix.
 
 ---
 
-## 7. Verification & Development Directives
-
-* **File Size Ceiling:** All `.rs` source files must strictly remain under 250 LOC.
-* **Tiered Verification Matrix:**
-  * Tier 1: `cargo check -p dado-core` (<2s).
-  * Tier 2: `cargo fmt --check -p dado-core && cargo clippy -p dado-core && cargo test -p dado-core`.
-  * Tier 3: `chalkline docs check -d .` before task verification.
-
----
-
-## 8. License
+## 6. License
 
 Licensed under the [Apache License, Version 2.0](LICENSE).
-Part of the [`gaugeblock`](https://gaugeblock.dev) suite.
