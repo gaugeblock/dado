@@ -4,10 +4,10 @@ use crate::args::*;
 use chalkline_core::SharedTypeContract;
 use dado_core::PatternRegistry;
 use dado_core::mixin::apply_mixins;
+use dado_core::model::Language;
 use dado_core::polyglot::{generate_rust_struct, generate_ts_interface, generate_zod_schema};
 use dado_core::registry::verifier::verify_pack;
 use dado_core::splice::{SpliceOptions, splice_pattern};
-use miter_engine::Language;
 use serde_json::json;
 use std::collections::BTreeMap;
 
@@ -192,11 +192,5 @@ pub fn handle_verify_pack(
 }
 
 fn parse_lang(s: &str) -> Option<Language> {
-    match s.to_lowercase().as_str() {
-        "rust" | "rs" => Some(Language::Rust),
-        "typescript" | "ts" => Some(Language::TypeScript),
-        "tsx" => Some(Language::Tsx),
-        "javascript" | "js" => Some(Language::JavaScript),
-        _ => None,
-    }
+    Language::from_wire(s)
 }

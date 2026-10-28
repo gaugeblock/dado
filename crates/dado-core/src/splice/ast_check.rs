@@ -1,7 +1,7 @@
 //! Tree-sitter AST syntax and boundary validator.
 
 use crate::error::{DadoError, Result};
-use miter_engine::Language;
+use gaugeblock_contracts::Language;
 use tree_sitter::{Node, Parser};
 
 /// Validates whether `code` parses cleanly with zero ERROR or MISSING syntax nodes.
@@ -16,6 +16,12 @@ pub fn validate_syntax(code: &str, lang: Language) -> Result<(bool, Vec<String>)
             return Err(DadoError::TreeSitter(
                 "Python grammar not yet enabled in dado".into(),
             ));
+        }
+        other => {
+            return Err(DadoError::TreeSitter(format!(
+                "'{name}' is a declarative format with no syntax tree to validate",
+                name = other.name()
+            )));
         }
     };
 

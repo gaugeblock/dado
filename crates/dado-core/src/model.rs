@@ -1,103 +1,13 @@
 //! Data models for AST patterns, typed holes, and structural mixins.
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-/// Serde helper for `miter_engine::Language`.
-pub mod language_serde {
-    use super::*;
-    use miter_engine::Language;
-
-    /// Serializes a `Language` to its string name.
-    pub fn serialize<S>(lang: &Language, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(lang.name())
-    }
-
-    /// Deserializes a `Language` from a string.
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<Language, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        match s.to_lowercase().as_str() {
-            "rust" | "rs" => Ok(Language::Rust),
-            "typescript" | "ts" => Ok(Language::TypeScript),
-            "tsx" => Ok(Language::Tsx),
-            "javascript" | "js" => Ok(Language::JavaScript),
-            "python" | "py" => Ok(Language::Python),
-            other => Err(serde::de::Error::custom(format!(
-                "Unknown language: {other}"
-            ))),
-        }
-    }
-}
-
-/// A single Typed Hole inside a `dado` AST template: `?[hole_id: expected_type @ ast_node_kind]`.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TypedHole {
-    /// Unique identifier for this hole within the template (e.g., "query_sql").
-    pub hole_id: String,
-    /// Expected semantic/static type of the hole expression (e.g., "&str", "AppError").
-    pub expected_type: String,
-    /// AST target node kind (e.g., "expression", "statement", "match_arm").
-    pub ast_node_kind: String,
-    /// Maximum permitted token budget when generating this hole.
-    #[serde(default = "default_max_tokens")]
-    pub max_tokens: u16,
-    /// Whether literal constant expressions are permitted in this hole.
-    #[serde(default = "default_allow_literals")]
-    pub allow_literals: bool,
-}
-
-fn default_max_tokens() -> u16 {
-    64
-}
-
-fn default_allow_literals() -> bool {
-    true
-}
-
-impl TypedHole {
-    /// Creates a new `TypedHole` with sensible defaults.
-    pub fn new(
-        hole_id: impl Into<String>,
-        expected_type: impl Into<String>,
-        ast_node_kind: impl Into<String>,
-    ) -> Self {
-        Self {
-            hole_id: hole_id.into(),
-            expected_type: expected_type.into(),
-            ast_node_kind: ast_node_kind.into(),
-            max_tokens: 64,
-            allow_literals: true,
-        }
-    }
-}
-
-/// A parameterized AST pattern containing template code and typed holes.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct DadoPattern {
-    /// Canonical pattern identifier (e.g., "rust.axum.json_handler.v1").
-    pub pattern_id: String,
-    /// Target programming language.
-    #[serde(with = "language_serde")]
-    pub language: miter_engine::Language,
-    /// Human-readable description of what this pattern scaffolds.
-    pub description: String,
-    /// Source code template containing `?[hole_id: Type @ kind]` markers.
-    pub template_source: String,
-    /// Required import statements (e.g. `use axum::Json;`).
-    #[serde(default)]
-    pub required_imports: Vec<String>,
-    /// Declared holes in this template.
-    pub holes: Vec<TypedHole>,
-    /// Example valid fills for deterministic self-testing.
-    #[serde(default)]
-    pub canonical_example_fills: BTreeMap<String, String>,
-}
+// `Language`, `TypedHole` and `DadoPattern` live in the shared contracts crate (GB-143); they are
+// re-exported here so every existing `dado_core::model::*` path keeps working. The wire `Language`
+// already spells itself the lowercase way the pattern packs use, so dado no longer needs a custom
+// serde module for it.
+pub use gaugeblock_contracts::{DadoPattern, Language, TypedHole};
 
 /// Composable structural wrapper that envelopes an inner anchor hole.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -105,8 +15,7 @@ pub struct DadoMixin {
     /// Unique mixin identifier (e.g., "rust.mixin.tracing_instrument").
     pub mixin_id: String,
     /// Target programming language.
-    #[serde(with = "language_serde")]
-    pub language: miter_engine::Language,
+    pub language: Language,
     /// Target hole identifier in the base pattern to wrap (defaults to "body").
     #[serde(default = "default_target_hole")]
     pub target_hole_id: String,

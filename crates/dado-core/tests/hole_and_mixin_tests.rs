@@ -4,8 +4,8 @@
 
 use dado_core::hole::{parse_inline_holes, validate_pattern_holes};
 use dado_core::mixin::apply_mixins;
+use dado_core::model::Language;
 use dado_core::model::{DadoMixin, DadoPattern, TypedHole};
-use miter_engine::Language;
 use std::collections::BTreeMap;
 
 #[test]

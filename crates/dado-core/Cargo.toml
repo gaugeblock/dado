@@ -11,6 +11,8 @@ description = "Core library, AST pattern engine, typed hole parser, and polyglot
 workspace = true
 
 [dependencies]
+# Shared wire contracts; resolved locally through the meta-harness [patch.crates-io] mapping.
+gaugeblock-contracts = "0.1.0-beta.1"
 miter-engine = "0.1.0-alpha.3"
 miter-ast = "0.1.0-alpha.3"
 chalkline-core = "0.1.0-beta.2"

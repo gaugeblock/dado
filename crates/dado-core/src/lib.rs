@@ -17,7 +17,7 @@ pub use error::{DadoError, Result};
 pub use hole::{InlineHoleSpan, parse_inline_holes, validate_pattern_holes};
 pub use mixin::{apply_mixin, apply_mixins};
 pub use model::{
-    DadoMixin, DadoPattern, PatternVerificationReceipt, SpliceResult, TypedHole, language_serde,
+    DadoMixin, DadoPattern, Language, PatternVerificationReceipt, SpliceResult, TypedHole,
 };
 pub use polyglot::{
     CanonicalType, generate_rust_struct, generate_ts_interface, generate_zod_schema,

@@ -4,7 +4,7 @@ pub mod verifier;
 
 use crate::error::Result;
 use crate::model::{DadoMixin, DadoPattern};
-use miter_engine::Language;
+use gaugeblock_contracts::Language;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::path::Path;

@@ -3,10 +3,10 @@
 //! Tests for embedded packs, pattern registry, and tree-sitter validated splicing.
 
 use dado_core::model::DadoPattern;
+use dado_core::model::Language;
 use dado_core::registry::PatternRegistry;
 use dado_core::registry::verifier::verify_pack;
 use dado_core::splice::{SpliceOptions, splice_pattern};
-use miter_engine::Language;
 use std::collections::BTreeMap;
 
 #[test]
