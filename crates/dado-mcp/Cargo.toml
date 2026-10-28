@@ -11,7 +11,7 @@ description = "Model Context Protocol (MCP) server for dado"
 workspace = true
 
 [dependencies]
-dado-core = { path = "../dado-core", version = "0.1.0-beta.3" }
+dado-core = { path = "../dado-core", version = "0.1.0-beta.4" }
 chalkline-core = "0.1.0-beta.2"
 miter-engine = "0.1.0-alpha.3"
 serde = { version = "1.0", features = ["derive"] }
