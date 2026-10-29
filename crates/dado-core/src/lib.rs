@@ -7,6 +7,7 @@
 
 pub mod error;
 pub mod hole;
+pub mod language_serde;
 pub mod mixin;
 pub mod model;
 pub mod polyglot;
