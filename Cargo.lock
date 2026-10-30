@@ -303,11 +303,7 @@ dependencies = [
  "clap",
  "dado-core",
  "dado-mcp",
- "miter-engine",
- "serde",
  "serde_json",
- "thiserror 2.0.21",
- "tokio",
  "tracing",
  "tracing-subscriber",
 ]
@@ -318,7 +314,6 @@ version = "0.1.0-beta.4"
 dependencies = [
  "chalkline-core",
  "gaugeblock-contracts",
- "miter-ast",
  "miter-engine",
  "serde",
  "serde_json",
@@ -335,11 +330,7 @@ version = "0.1.0-beta.4"
 dependencies = [
  "chalkline-core",
  "dado-core",
- "miter-engine",
- "serde",
  "serde_json",
- "thiserror 2.0.21",
- "tokio",
  "tracing",
 ]
 

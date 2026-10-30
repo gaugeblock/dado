@@ -14,15 +14,14 @@ workspace = true
 # Shared wire contracts; resolved locally through the meta-harness [patch.crates-io] mapping.
 gaugeblock-contracts = "0.1.0-beta.1"
 miter-engine = "0.1.0-alpha.3"
-miter-ast = "0.1.0-alpha.3"
 chalkline-core = "0.1.0-beta.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 toml = "1.1"
 thiserror = "2.0"
-tracing = "0.1"
-uuid = { version = "1.10", features = ["v4", "serde"] }
 
 [dev-dependencies]
+tracing = "0.1"
+uuid = { version = "1.10", features = ["v4", "serde"] }
 tempfile = "3.10"
 
