@@ -7,127 +7,67 @@ pub mod dispatch;
 pub mod schema;
 
 use dado_core::PatternRegistry;
-use dispatch::dispatch_tool;
-use schema::list_tools;
-use serde_json::{Value, json};
-use std::io::{self, BufRead, Write};
+use gaugeblock_mcp::{McpHandler, RpcRequest, RpcResponse, ToolOutcome};
+use serde_json::Value;
+use std::io::{self};
 use std::path::Path;
 
 /// MCP server version.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// `dado`'s tool surface, borrowing the registry the tools read.
+#[derive(Debug)]
+pub struct DadoHandler<'a> {
+    registry: &'a PatternRegistry,
+}
+
+impl<'a> DadoHandler<'a> {
+    /// Builds a handler over a loaded registry.
+    #[must_use]
+    pub fn new(registry: &'a PatternRegistry) -> Self {
+        Self { registry }
+    }
+}
+
+impl McpHandler for DadoHandler<'_> {
+    fn server_name(&self) -> &str {
+        "dado-mcp"
+    }
+
+    fn list_tools(&self) -> Value {
+        Value::Array(schema::list_tools())
+    }
+
+    fn call_tool(&self, name: &str, arguments: &Value) -> ToolOutcome {
+        match dispatch::dispatch_tool(name, arguments, self.registry) {
+            Ok(content) => ToolOutcome::Json(content),
+            Err(message) => ToolOutcome::Failed(message),
+        }
+    }
+}
+
 /// Runs the stdio JSON-RPC 2.0 MCP server loop over stdin and stdout.
+///
+/// # Errors
+///
+/// Returns the failure to build the registry, or the I/O failure on stdin or stdout.
 pub fn run_stdio_server(root_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
     let mut registry = PatternRegistry::new()?;
     let _ = registry.load_from_dir(root_dir);
-
-    let stdin = io::stdin();
-    let mut stdout = io::stdout();
-
     tracing::info!("Starting dado-mcp stdio server loop");
 
-    for line_res in stdin.lock().lines() {
-        let line = match line_res {
-            Ok(l) => l,
-            Err(e) => {
-                tracing::error!("Failed to read stdin line: {e}");
-                break;
-            }
-        };
-
-        let trimmed = line.trim();
-        if trimmed.is_empty() {
-            continue;
-        }
-
-        let msg: Value = match serde_json::from_str(trimmed) {
-            Ok(v) => v,
-            Err(e) => {
-                tracing::error!("Failed to parse JSON-RPC message: {e}");
-                continue;
-            }
-        };
-
-        if let Some(resp) = handle_message(&msg, &registry) {
-            let resp_str = serde_json::to_string(&resp)?;
-            writeln!(stdout, "{resp_str}")?;
-            stdout.flush()?;
-        }
-    }
-
+    let handler = DadoHandler::new(&registry);
+    let stdin = io::stdin();
+    let mut stdout = io::stdout();
+    gaugeblock_mcp::serve(stdin.lock(), &mut stdout, &handler)?;
     Ok(())
 }
 
-/// Handles a single JSON-RPC 2.0 message and generates a response.
+/// Handles a single message.
+///
+/// Kept because the existing tests drive the server this way; the routing lives in `gaugeblock-mcp`.
 #[must_use]
 pub fn handle_message(msg: &Value, registry: &PatternRegistry) -> Option<Value> {
-    let id = msg.get("id").cloned();
-    let method = msg.get("method").and_then(|v| v.as_str())?;
-
-    match method {
-        "initialize" => Some(json!({
-            "jsonrpc": "2.0",
-            "id": id,
-            "result": {
-                "protocolVersion": "2024-11-05",
-                "capabilities": {
-                    "tools": {}
-                },
-                "serverInfo": {
-                    "name": "dado-mcp",
-                    "version": VERSION
-                }
-            }
-        })),
-        "notifications/initialized" => None,
-        "tools/list" => Some(json!({
-            "jsonrpc": "2.0",
-            "id": id,
-            "result": {
-                "tools": list_tools()
-            }
-        })),
-        "tools/call" => {
-            let params = msg.get("params");
-            let tool_name = params
-                .and_then(|p| p.get("name"))
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            let arguments = params
-                .and_then(|p| p.get("arguments"))
-                .cloned()
-                .unwrap_or_else(|| json!({}));
-
-            match dispatch_tool(tool_name, &arguments, registry) {
-                Ok(content) => Some(json!({
-                    "jsonrpc": "2.0",
-                    "id": id,
-                    "result": {
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": content.to_string()
-                            }
-                        ]
-                    }
-                })),
-                Err(err_msg) => Some(json!({
-                    "jsonrpc": "2.0",
-                    "id": id,
-                    "error": {
-                        "code": -32603,
-                        "message": err_msg
-                    }
-                })),
-            }
-        }
-        _ => Some(json!({
-            "jsonrpc": "2.0",
-            "id": id,
-            "error": {
-                "code": -32601,
-                "message": format!("Method not found: {method}")
-            }
-        })),
-    }
+    let request: RpcRequest = serde_json::from_value(msg.clone()).ok()?;
+    gaugeblock_mcp::dispatch(&DadoHandler::new(registry), &request).map(RpcResponse::into_value)
 }

@@ -329,6 +329,7 @@ version = "0.1.0-beta.4"
 dependencies = [
  "chalkline-core",
  "dado-core",
+ "gaugeblock-mcp",
  "serde_json",
  "tracing",
 ]
@@ -531,6 +532,16 @@ name = "gaugeblock-git"
 version = "0.1.0-beta.1"
 dependencies = [
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "gaugeblock-mcp"
+version = "0.1.0-beta.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
