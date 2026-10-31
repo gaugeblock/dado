@@ -2,7 +2,7 @@
 
 //! Unit and integration tests for polyglot contract codegen.
 
-use chalkline_core::{ContractField, SharedTypeContract};
+use gaugeblock_contracts::{ContractField, SharedTypeContract};
 use dado_core::model::Language;
 use dado_core::polyglot::{generate_rust_struct, generate_ts_interface, generate_zod_schema};
 use dado_core::splice::ast_check::validate_syntax;

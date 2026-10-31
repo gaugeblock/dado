@@ -1,7 +1,7 @@
 //! TypeScript interface and Zod runtime schema generators from `SharedTypeContract`.
 
 use super::{CanonicalType, parse_canonical_type};
-use chalkline_core::SharedTypeContract;
+use gaugeblock_contracts::SharedTypeContract;
 
 /// Emits a TypeScript `export interface` declaration from a `SharedTypeContract`.
 pub fn generate_ts_interface(contract: &SharedTypeContract) -> String {

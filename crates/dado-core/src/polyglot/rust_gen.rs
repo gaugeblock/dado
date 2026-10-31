@@ -1,7 +1,7 @@
 //! Rust struct generator from `SharedTypeContract`.
 
 use super::{CanonicalType, parse_canonical_type};
-use chalkline_core::SharedTypeContract;
+use gaugeblock_contracts::SharedTypeContract;
 
 /// Emits a Rust serde-annotated `pub struct` from a `SharedTypeContract`.
 pub fn generate_rust_struct(contract: &SharedTypeContract) -> String {

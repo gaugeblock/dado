@@ -2,7 +2,7 @@
 
 #![forbid(unsafe_code)]
 
-use chalkline_core::SharedTypeContract;
+use gaugeblock_contracts::SharedTypeContract;
 use dado_core::PatternRegistry;
 use dado_core::mixin::apply_mixins;
 use dado_core::model::Language;
