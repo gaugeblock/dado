@@ -82,3 +82,4 @@ stateDiagram-v2
 - **`model::SpliceResult`** (`struct`): Output payload containing rendered source code, injected imports, and AST stats.
 - **`model::TypedHole`** (`struct`): Formal definition of a typed hole with ID, target type, and node kind.
 - **`args::VerifyPackArgs`** (`struct`): Command-line options for auditing pattern packs.
+- **`lib::DadoHandler`** (`struct`): The server's tool surface, borrowing the loaded `PatternRegistry` and implementing `McpHandler` so the stdio loop and wire rules come from `gaugeblock-mcp`.
