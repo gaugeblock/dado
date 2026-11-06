@@ -1391,6 +1391,10 @@ name = "gaugeblock-git"
 version = "0.1.0-beta.1"
 
 [[patch.unused]]
+name = "gaugeblock-inventory"
+version = "0.1.0-beta.1"
+
+[[patch.unused]]
 name = "gaugeblock-workspace"
 version = "0.1.0-beta.1"
 
@@ -1424,10 +1428,6 @@ version = "0.1.0-beta.4"
 
 [[patch.unused]]
 name = "miter-harness"
-version = "0.1.0-beta.4"
-
-[[patch.unused]]
-name = "miter-inventory"
 version = "0.1.0-beta.4"
 
 [[patch.unused]]
