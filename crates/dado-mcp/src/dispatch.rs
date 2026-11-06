@@ -2,13 +2,13 @@
 
 #![forbid(unsafe_code)]
 
-use gaugeblock_contracts::SharedTypeContract;
 use dado_core::PatternRegistry;
 use dado_core::mixin::apply_mixins;
 use dado_core::model::Language;
 use dado_core::polyglot::{generate_rust_struct, generate_ts_interface, generate_zod_schema};
 use dado_core::registry::verifier::verify_pack;
 use dado_core::splice::{SpliceOptions, splice_pattern};
+use gaugeblock_contracts::SharedTypeContract;
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
