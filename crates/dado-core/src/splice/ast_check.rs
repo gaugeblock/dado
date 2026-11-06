@@ -1,16 +1,20 @@
-//! Tree-sitter syntax and boundary validation, delegated to `miter-engine`'s grammar table.
+//! Tree-sitter syntax and boundary validation, delegated to `miter-polyglot`'s grammar table.
 //!
 //! This module used to own a second parser: its own language-to-grammar match and its own copies of
 //! `tree-sitter-rust` and `tree-sitter-typescript`. That copy had drifted - Python was rejected with
 //! "not yet enabled" while the workspace grammar table had read it for months (`GB-148`). The
-//! grammar table, the parse, and the diagnostics now live in `miter_engine::polyglot`; this module
+//! grammar table, the parse, and the diagnostics now live in `miter-polyglot`; this module
 //! converts dado's wire language and formats the messages the splice pipeline reports.
+//!
+//! The import names `miter-polyglot` directly rather than reaching through `miter-engine`'s
+//! re-export (`GB-204`): the engine is a facade, and a facade dependency for one module's grammar
+//! calls is a lateral edge between two products for no benefit.
 
 use crate::error::{DadoError, Result};
 use gaugeblock_contracts::Language;
-use miter_engine::polyglot::{
-    Language as PolyglotLanguage, SyntaxDiagnostic, SyntaxDiagnosticKind, span_within_node,
-    syntax_diagnostics,
+use miter_polyglot::Language as PolyglotLanguage;
+use miter_polyglot::syntax::{
+    SyntaxDiagnostic, SyntaxDiagnosticKind, span_within_node, syntax_diagnostics,
 };
 
 /// Validates whether `code` parses cleanly with zero ERROR or MISSING syntax nodes.
@@ -58,7 +62,7 @@ fn polyglot_language(lang: Language) -> Result<PolyglotLanguage> {
 }
 
 /// Turns a `miter-engine` failure into the splice pipeline's own error.
-fn tree_sitter_error(error: miter_engine::polyglot::PolyglotError) -> DadoError {
+fn tree_sitter_error(error: miter_polyglot::PolyglotError) -> DadoError {
     DadoError::TreeSitter(error.to_string())
 }
 
