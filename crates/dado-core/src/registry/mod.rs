@@ -101,7 +101,8 @@ impl PatternRegistry {
     /// Checks `.gaugeblock/dado`, `.dado`, or `root_dir` directly.
     pub fn load_from_dir(&mut self, root_dir: &Path) -> Result<usize> {
         let mut count = 0;
-        let gb_dado = root_dir.join(".gaugeblock").join("dado");
+        // Through the canonical resolver (`GB-304`): dado must not hold its own copy of the layout.
+        let gb_dado = gaugeblock_workspace::GaugeblockPaths::at(root_dir).member("dado");
         if gb_dado.is_dir() {
             count += self.load_single_dir(&gb_dado)?;
         }

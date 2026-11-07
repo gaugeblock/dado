@@ -4,8 +4,10 @@ use std::path::Path;
 
 /// Executes `dado init`.
 pub fn handle_init(dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    // Same resolver as the reader in `dado-core` (`GB-304`): a tool that creates a directory in one
+    // place and reads it in another must spell it identically forever.
     let dado_dir = if dir.join(".gaugeblock").is_dir() {
-        dir.join(".gaugeblock").join("dado")
+        gaugeblock_workspace::GaugeblockPaths::at(dir).member("dado")
     } else {
         dir.join(".dado")
     };

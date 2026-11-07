@@ -178,6 +178,7 @@ dependencies = [
  "dado-core",
  "dado-mcp",
  "gaugeblock-contracts",
+ "gaugeblock-workspace",
  "serde_json",
  "tracing",
  "tracing-subscriber",
@@ -189,6 +190,7 @@ version = "0.1.0-beta.4"
 dependencies = [
  "gaugeblock-contracts",
  "gaugeblock-syntax",
+ "gaugeblock-workspace",
  "serde",
  "serde_json",
  "tempfile",
@@ -282,6 +284,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "gaugeblock-git"
+version = "0.1.0-beta.1"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
 name = "gaugeblock-mcp"
 version = "0.1.0-beta.1"
 dependencies = [
@@ -300,6 +309,18 @@ dependencies = [
  "tree-sitter-python",
  "tree-sitter-rust",
  "tree-sitter-typescript",
+]
+
+[[package]]
+name = "gaugeblock-workspace"
+version = "0.1.0-beta.1"
+dependencies = [
+ "gaugeblock-contracts",
+ "gaugeblock-git",
+ "serde_json",
+ "thiserror",
+ "toml",
+ "uuid",
 ]
 
 [[package]]
@@ -988,15 +1009,7 @@ name = "gaugeblock-common"
 version = "0.1.0-beta.1"
 
 [[patch.unused]]
-name = "gaugeblock-git"
-version = "0.1.0-beta.1"
-
-[[patch.unused]]
 name = "gaugeblock-inventory"
-version = "0.1.0-beta.1"
-
-[[patch.unused]]
-name = "gaugeblock-workspace"
 version = "0.1.0-beta.1"
 
 [[patch.unused]]
