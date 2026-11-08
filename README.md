@@ -114,7 +114,7 @@ dado contract --input contracts/user.json --target typescript
 
 `dado` adheres strictly to the canonical 9-Document Architecture:
 * **[`README.md`](./README.md):** Public elevator pitch, CLI reference, and quickstart.
-* **[`CONTRIBUTING.md`](docs/CONTRIBUTING.md):** Developer environment setup, Rust 2024 toolchain, and test execution.
+* **[`CONTRIBUTING.md`](CONTRIBUTING.md):** Developer environment setup, Rust 2024 toolchain, and test execution.
 * **[`PRODUCT.md`](docs/PRODUCT.md):** User personas, JTBD, token reduction metrics, and problem statements.
 * **[`ARCHITECTURE.md`](docs/ARCHITECTURE.md):** Subsystem topologies, Tree-sitter splicing pipeline, and crate boundaries.
 * **[`SPEC.md`](docs/SPEC.md):** Formal typed hole grammar, AST validation invariants, and type contracts.
