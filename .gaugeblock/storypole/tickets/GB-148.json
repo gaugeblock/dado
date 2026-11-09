@@ -1,0 +1,144 @@
+{
+  "ticket": {
+    "id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+    "ticket_key": "GB-148",
+    "slug": "dado-core-re-implements-tree-sitter-syntax-validation-instead-of-using-miter-engine-s-polyglot-parser-92bd60",
+    "title": "dado-core re-implements tree-sitter syntax validation instead of using miter-engine's polyglot parser",
+    "description": "dado-core depends on miter-engine and miter-ast, yet splice/ast_check.rs builds its own tree-sitter parser with tree-sitter, tree-sitter-rust and tree-sitter-typescript (three C-compiled crates) to validate spliced code. miter-engine already exposes the shared parser (polyglot::dispatch::{parse,parse_detected,parse_declarative}); dado's copy covers fewer languages (validate_syntax errors with 'Python grammar not yet enabled in dado' for Language::Python even though miter parses Python). Replacing validate_syntax with the miter-engine parser removes three C dependencies from dado's build graph and closes the Python gap. Note: dado-core/src/polyglot/{rust_gen,ts_gen}.rs is code GENERATION, not extraction, so it is not duplication and should stay with dado.",
+    "kind": "refactor",
+    "status": "verified",
+    "priority": 3,
+    "scope": {
+      "repo": null,
+      "crate_name": "dado-core",
+      "module_path": null,
+      "target_files": [
+        "dado/crates/dado-core/src/splice/ast_check.rs,dado/crates/dado-core/Cargo.toml"
+      ],
+      "target_symbols": [
+        "dado_core::splice::ast_check::validate_syntax"
+      ],
+      "labels": [
+        "dedup,polyglot"
+      ]
+    },
+    "edges": [],
+    "decisions": [],
+    "acceptance_criteria": [],
+    "plan": null,
+    "active_claim": null,
+    "latest_handoff": null,
+    "verification_receipt": {
+      "verifier": "cline",
+      "command": "n/a",
+      "exit_code": 0,
+      "diagnostic_count": null,
+      "summary": "Closed across two repositories, each on its own branch with the lease taken before any edit (miter feat/miter-syntax-diagnostics, dado feat/dado-use-miter-parser). miter main 4fc2cb5 adds polyglot::syntax: one parser_for constructor shared with dispatch::parse, syntax_diagnostics returning positioned ERROR and MISSING nodes, span_within_node for hole boundaries, and character-boundary slicing so a multi-byte span cannot panic; six tests, gate 238/238. dado main 2d7fc54 turns validate_syntax and check_hole_boundary into thin adapters over that API, drops three direct tree-sitter dependencies, and formats the established message shapes; five tests cover Python validating (previously refused), broken Python reporting a position, unchanged Rust shape, a declarative format, and boundaries; gate 14/14. miter-engine's crate version is deliberately unchanged - local development resolves it through the harness [patch.crates-io] and the bump belongs with the next release.",
+      "verified_at_epoch_ms": 1793246905215,
+      "git_branch": "main",
+      "base_commit_sha": "2d7fc54683c39303b2abc8cc7bbb915c2830f969",
+      "head_commit_sha": "2d7fc54683c39303b2abc8cc7bbb915c2830f969",
+      "commit_shas": [
+        "2d7fc54683c39303b2abc8cc7bbb915c2830f969"
+      ],
+      "repo": null,
+      "chain_key": null
+    },
+    "created_at_epoch_ms": 1793226013284,
+    "updated_at_epoch_ms": 1794038009623,
+    "archived_at_epoch_ms": 1794038009623
+  },
+  "events": [
+    {
+      "event": "deferred_item_captured",
+      "task": {
+        "id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+        "ticket_key": "GB-148",
+        "slug": "dado-core-re-implements-tree-sitter-syntax-validation-instead-of-using-miter-engine-s-polyglot-parser-92bd60",
+        "title": "dado-core re-implements tree-sitter syntax validation instead of using miter-engine's polyglot parser",
+        "description": "dado-core depends on miter-engine and miter-ast, yet splice/ast_check.rs builds its own tree-sitter parser with tree-sitter, tree-sitter-rust and tree-sitter-typescript (three C-compiled crates) to validate spliced code. miter-engine already exposes the shared parser (polyglot::dispatch::{parse,parse_detected,parse_declarative}); dado's copy covers fewer languages (validate_syntax errors with 'Python grammar not yet enabled in dado' for Language::Python even though miter parses Python). Replacing validate_syntax with the miter-engine parser removes three C dependencies from dado's build graph and closes the Python gap. Note: dado-core/src/polyglot/{rust_gen,ts_gen}.rs is code GENERATION, not extraction, so it is not duplication and should stay with dado.",
+        "kind": "refactor",
+        "status": "deferred",
+        "priority": 3,
+        "scope": {
+          "repo": null,
+          "crate_name": "dado-core",
+          "module_path": null,
+          "target_files": [
+            "dado/crates/dado-core/src/splice/ast_check.rs,dado/crates/dado-core/Cargo.toml"
+          ],
+          "target_symbols": [
+            "dado_core::splice::ast_check::validate_syntax"
+          ],
+          "labels": [
+            "dedup,polyglot"
+          ]
+        },
+        "edges": [],
+        "decisions": [],
+        "acceptance_criteria": [],
+        "plan": null,
+        "active_claim": null,
+        "latest_handoff": null,
+        "verification_receipt": null,
+        "created_at_epoch_ms": 1793226013284,
+        "updated_at_epoch_ms": 1793226013284
+      },
+      "captured_by_agent": "cline",
+      "discovered_from_task_id": null
+    },
+    {
+      "event": "task_claimed",
+      "task_id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "claim": {
+        "agent_id": "cline",
+        "claimed_at_epoch_ms": 1793246314559,
+        "lease_expires_at_epoch_ms": 1793249914559,
+        "git_branch": "feat/dado-use-miter-parser",
+        "base_commit_sha": null
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "from": "deferred",
+      "to": "in_progress",
+      "reason": "Claimed by cline",
+      "timestamp_ms": 1793246314559
+    },
+    {
+      "event": "task_verified",
+      "task_id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "receipt": {
+        "verifier": "cline",
+        "command": "n/a",
+        "exit_code": 0,
+        "diagnostic_count": null,
+        "summary": "Closed across two repositories, each on its own branch with the lease taken before any edit (miter feat/miter-syntax-diagnostics, dado feat/dado-use-miter-parser). miter main 4fc2cb5 adds polyglot::syntax: one parser_for constructor shared with dispatch::parse, syntax_diagnostics returning positioned ERROR and MISSING nodes, span_within_node for hole boundaries, and character-boundary slicing so a multi-byte span cannot panic; six tests, gate 238/238. dado main 2d7fc54 turns validate_syntax and check_hole_boundary into thin adapters over that API, drops three direct tree-sitter dependencies, and formats the established message shapes; five tests cover Python validating (previously refused), broken Python reporting a position, unchanged Rust shape, a declarative format, and boundaries; gate 14/14. miter-engine's crate version is deliberately unchanged - local development resolves it through the harness [patch.crates-io] and the bump belongs with the next release.",
+        "verified_at_epoch_ms": 1793246905215,
+        "git_branch": "main",
+        "base_commit_sha": "2d7fc54683c39303b2abc8cc7bbb915c2830f969",
+        "head_commit_sha": "2d7fc54683c39303b2abc8cc7bbb915c2830f969",
+        "commit_shas": [
+          "2d7fc54683c39303b2abc8cc7bbb915c2830f969"
+        ],
+        "repo": null,
+        "chain_key": null
+      }
+    },
+    {
+      "event": "status_changed",
+      "task_id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "from": "verified",
+      "to": "archived",
+      "reason": "Archived out of active backlog",
+      "timestamp_ms": 1793289305916
+    },
+    {
+      "event": "task_archived",
+      "task_id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "status": "verified",
+      "timestamp_ms": 1794038009623
+    }
+  ]
+}
