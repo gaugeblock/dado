@@ -1,0 +1,19 @@
+{
+  "remints": [
+    {
+      "id": "2caa3400-550a-4445-8f6f-b74b1afea36d",
+      "from": "GB-111",
+      "to": "DA-1"
+    },
+    {
+      "id": "92bd609b-0c27-4cb3-92e5-b0c346dcbace",
+      "from": "GB-148",
+      "to": "DA-2"
+    },
+    {
+      "id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "from": "GB-172",
+      "to": "DA-3"
+    }
+  ]
+}

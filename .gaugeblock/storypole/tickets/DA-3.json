@@ -69,7 +69,7 @@
         "git_branch": "main",
         "head_commit_sha": "105f8f9836dc8d6e2cfda80c5957fa38d68648be",
         "repo": null,
-        "summary": "Fixed on dado main at 105f8f9: batten-core referenced dado_core::language_serde while the locally patched dado-core had no such module, so batten could not compile. The adapter is restored as a self-contained mapping over miter_engine::Language - the five-variant AST language, for which the thirteen-format From conversions in miter-engine do not apply - serialising canonical lowercase names and accepting the rs/ts/js/py aliases. Verified by cargo check -p batten-core --all-targets, which is now clean. Surfaced while promoting the telemetry record for GB-165; the fact that two members were uncompilable confirms the value of outfeed gate covering every repository.",
+        "summary": "Fixed on dado main at 105f8f9: batten-core referenced dado_core::language_serde while the locally patched dado-core had no such module, so batten could not compile. The adapter is restored as a self-contained mapping over miter_engine::Language - the five-variant AST language, for which the thirteen-format From conversions in miter-engine do not apply - serialising canonical lowercase names and accepting the rs/ts/js/py aliases. Verified by cargo check -p batten-core --all-targets, which is now clean. Surfaced while promoting the telemetry record for JN-4; the fact that two members were uncompilable confirms the value of outfeed gate covering every repository.",
         "verified_at_epoch_ms": 1793254806666,
         "verifier": "cline"
       },
