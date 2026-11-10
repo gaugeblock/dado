@@ -1,0 +1,180 @@
+{
+  "events": [
+    {
+      "captured_by_agent": "cline",
+      "discovered_from_task_id": null,
+      "event": "deferred_item_captured",
+      "task": {
+        "acceptance_criteria": [],
+        "active_claim": null,
+        "created_at_epoch_ms": 1793254796137,
+        "decisions": [],
+        "description": "FIXED in dado main 105f8f9. batten-core annotated LexicalScope::language with #[serde(with = \"dado_core::language_serde\")] while the local dado-core (patched in .cargo/config.toml) had no such module, so batten-core could not compile at all - the reference outlived its module. Restored as a self-contained adapter over the five-variant miter_engine::Language with canonical lowercase names and rs/ts/js/py aliases; the thirteen-format From conversions do not apply to that type. Verified: batten-core check --all-targets is clean. Root cause worth noting: no gate has run over batten recently, which is exactly what outfeed gate now prevents.",
+        "edges": [],
+        "id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+        "kind": "bug",
+        "latest_handoff": null,
+        "plan": null,
+        "priority": 3,
+        "scope": {
+          "crate_name": "dado-core",
+          "labels": [],
+          "module_path": null,
+          "repo": null,
+          "target_files": [
+            "dado/crates/dado-core/src/language_serde.rs,batten/crates/batten-core/src/model.rs"
+          ],
+          "target_symbols": [
+            "dado_core::language_serde"
+          ]
+        },
+        "slug": "dado-core-lost-language-serde-leaving-batten-core-unbuildable-e043dc",
+        "status": "triage",
+        "ticket_key": "DA-3",
+        "title": "dado-core lost language_serde, leaving batten-core unbuildable",
+        "updated_at_epoch_ms": 1793254796137,
+        "verification_receipt": null
+      }
+    },
+    {
+      "claim": {
+        "agent_id": "cline",
+        "base_commit_sha": null,
+        "claimed_at_epoch_ms": 1793254806441,
+        "git_branch": null,
+        "lease_expires_at_epoch_ms": 1793258406441
+      },
+      "event": "task_claimed",
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e"
+    },
+    {
+      "event": "status_changed",
+      "from": "triage",
+      "reason": "Claimed by cline",
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "timestamp_ms": 1793254806441,
+      "to": "in_progress"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "105f8f9836dc8d6e2cfda80c5957fa38d68648be",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "105f8f9836dc8d6e2cfda80c5957fa38d68648be"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "105f8f9836dc8d6e2cfda80c5957fa38d68648be",
+        "repo": null,
+        "summary": "Fixed on dado main at 105f8f9: batten-core referenced dado_core::language_serde while the locally patched dado-core had no such module, so batten could not compile. The adapter is restored as a self-contained mapping over miter_engine::Language - the five-variant AST language, for which the thirteen-format From conversions in miter-engine do not apply - serialising canonical lowercase names and accepting the rs/ts/js/py aliases. Verified by cargo check -p batten-core --all-targets, which is now clean. Surfaced while promoting the telemetry record for GB-165; the fact that two members were uncompilable confirms the value of outfeed gate covering every repository.",
+        "verified_at_epoch_ms": 1793254806666,
+        "verifier": "cline"
+      },
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e"
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "CORRECTION to the original record, which claimed dado-core had lost the module. git log --all -- \"*language_serde*\" shows it has never existed in this repository in any commit except the one that adds it - there is no deletion to point at, and no published dado-core in the local registry. So this was not a removal that forgot its dependents: batten-core has carried an annotation naming a module nobody ever wrote, which means batten has not been compiled since that annotation landed. Restored in dado main 105f8f9 as a self-contained mapping over the five-variant miter_engine::Language (which derives no serde traits), serialising canonical lowercase names and accepting rs/ts/js/py aliases; cargo check -p batten-core --all-targets is clean. OPEN QUESTION deliberately left to the owner: the cleaner long-term fix is to drop the adapter and type LexicalScope::language as gaugeblock_contracts::Language, which already owns canonical lowercase serde plus lenient aliases per GB-143, converting to the miter taxonomy at the boundary. That is a wire-contract decision, so it is tracked as a follow-up rather than folded into a bug fix.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "timestamp_ms": 1793255141955,
+      "title": "batten-core referenced a dado_core::language_serde module that has never existed"
+    },
+    {
+      "acceptance_criteria": null,
+      "description": "TRUE HISTORY, corrected twice. First record claimed dado lost the module; wrong. Second claimed it never existed; also wrong, and it caused a shim to be restored that resurrected deliberately deleted code. The pickaxe (git log -S language_serde) finds the truth: dado commit c88b13c, \"refactor(dado-core): consume gaugeblock-contracts and drop the language shim\", the fourth staged repoint under the GB-143 option-A decision, deleted dado 36-line language_serde module on purpose because gaugeblock-contracts Language already spells languages in the lowercase form the committed packs use and reads them leniently. That repoint did not sweep the other repositories, so batten-core kept #[serde(with = \"dado_core::language_serde\")] on LexicalScope::language against a module that no longer existed, and batten has not compiled since - with no gate running over it to notice. My first fix restored the shim (reverted in dado 8ef0d59). The correct fix is now in batten a1c8381: type the field as gaugeblock-contracts Language and drop the annotation, with one construction site in scope_filter.rs and one test import following. cargo check -p batten-core --all-targets is clean. Process lesson: a string search by file path misses inline modules; the pickaxe search is what finds removals, and every repoint under GB-143 should have swept dependents across all repositories.",
+      "event": "task_updated",
+      "priority": null,
+      "scope": null,
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "timestamp_ms": 1793255418018,
+      "title": "batten-core carried a serde annotation for a module dado deleted on purpose"
+    },
+    {
+      "event": "task_verified",
+      "receipt": {
+        "base_commit_sha": "8ef0d5901b236fa2eba410d4d42682bbcce489bf",
+        "chain_key": null,
+        "command": "n/a",
+        "commit_shas": [
+          "8ef0d5901b236fa2eba410d4d42682bbcce489bf"
+        ],
+        "diagnostic_count": null,
+        "exit_code": 0,
+        "git_branch": "main",
+        "head_commit_sha": "8ef0d5901b236fa2eba410d4d42682bbcce489bf",
+        "repo": null,
+        "summary": "Corrected and re-verified. The true cause is dado c88b13c (GB-143 option-A repoint), which deliberately deleted dado 36-line language_serde module because gaugeblock-contracts Language already serialises canonical lowercase names and reads leniently. That repoint did not sweep the other repositories, so batten-core annotations outlived the module and batten has not compiled since, with no gate running over it. My first attempt restored the shim and was reverted in dado 8ef0d59; the correct fix is batten a1c8381, which types LexicalScope::language as gaugeblock-contracts Language and drops the annotation (the field is pure wire data - batten-core has no .language call site), with one construction site and one test import following. cargo check -p batten-core --all-targets is clean. Lesson recorded on the ticket: path-based git log misses inline modules, the pickaxe git log -S finds removals, and every GB-143 repoint needed a cross-repository dependent sweep.",
+        "verified_at_epoch_ms": 1793255430205,
+        "verifier": "cline"
+      },
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e"
+    },
+    {
+      "event": "status_changed",
+      "from": "verified",
+      "reason": "Archived out of active backlog",
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "timestamp_ms": 1793289331173,
+      "to": "archived"
+    },
+    {
+      "event": "task_archived",
+      "status": "verified",
+      "task_id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+      "timestamp_ms": 1794038013560
+    }
+  ],
+  "ticket": {
+    "acceptance_criteria": [],
+    "active_claim": null,
+    "archived_at_epoch_ms": 1794038013560,
+    "created_at_epoch_ms": 1793254796137,
+    "decisions": [],
+    "description": "TRUE HISTORY, corrected twice. First record claimed dado lost the module; wrong. Second claimed it never existed; also wrong, and it caused a shim to be restored that resurrected deliberately deleted code. The pickaxe (git log -S language_serde) finds the truth: dado commit c88b13c, \"refactor(dado-core): consume gaugeblock-contracts and drop the language shim\", the fourth staged repoint under the GB-143 option-A decision, deleted dado 36-line language_serde module on purpose because gaugeblock-contracts Language already spells languages in the lowercase form the committed packs use and reads them leniently. That repoint did not sweep the other repositories, so batten-core kept #[serde(with = \"dado_core::language_serde\")] on LexicalScope::language against a module that no longer existed, and batten has not compiled since - with no gate running over it to notice. My first fix restored the shim (reverted in dado 8ef0d59). The correct fix is now in batten a1c8381: type the field as gaugeblock-contracts Language and drop the annotation, with one construction site in scope_filter.rs and one test import following. cargo check -p batten-core --all-targets is clean. Process lesson: a string search by file path misses inline modules; the pickaxe search is what finds removals, and every repoint under GB-143 should have swept dependents across all repositories.",
+    "edges": [],
+    "id": "e043dcc5-7903-48da-a831-41eb1d12351e",
+    "kind": "bug",
+    "latest_handoff": null,
+    "plan": null,
+    "priority": 3,
+    "scope": {
+      "crate_name": "dado-core",
+      "labels": [],
+      "module_path": null,
+      "repo": null,
+      "target_files": [
+        "dado/crates/dado-core/src/language_serde.rs,batten/crates/batten-core/src/model.rs"
+      ],
+      "target_symbols": [
+        "dado_core::language_serde"
+      ]
+    },
+    "slug": "dado-core-lost-language-serde-leaving-batten-core-unbuildable-e043dc",
+    "status": "verified",
+    "ticket_key": "DA-3",
+    "title": "batten-core carried a serde annotation for a module dado deleted on purpose",
+    "updated_at_epoch_ms": 1794038013560,
+    "verification_receipt": {
+      "base_commit_sha": "8ef0d5901b236fa2eba410d4d42682bbcce489bf",
+      "chain_key": null,
+      "command": "n/a",
+      "commit_shas": [
+        "8ef0d5901b236fa2eba410d4d42682bbcce489bf"
+      ],
+      "diagnostic_count": null,
+      "exit_code": 0,
+      "git_branch": "main",
+      "head_commit_sha": "8ef0d5901b236fa2eba410d4d42682bbcce489bf",
+      "repo": null,
+      "summary": "Corrected and re-verified. The true cause is dado c88b13c (GB-143 option-A repoint), which deliberately deleted dado 36-line language_serde module because gaugeblock-contracts Language already serialises canonical lowercase names and reads leniently. That repoint did not sweep the other repositories, so batten-core annotations outlived the module and batten has not compiled since, with no gate running over it. My first attempt restored the shim and was reverted in dado 8ef0d59; the correct fix is batten a1c8381, which types LexicalScope::language as gaugeblock-contracts Language and drops the annotation (the field is pure wire data - batten-core has no .language call site), with one construction site and one test import following. cargo check -p batten-core --all-targets is clean. Lesson recorded on the ticket: path-based git log misses inline modules, the pickaxe git log -S finds removals, and every GB-143 repoint needed a cross-repository dependent sweep.",
+      "verified_at_epoch_ms": 1793255430205,
+      "verifier": "cline"
+    }
+  }
+}
